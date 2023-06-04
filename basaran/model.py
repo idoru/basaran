@@ -14,6 +14,10 @@ from transformers import (
     TopPLogitsWarper,
     BitsAndBytesConfig
 )
+from peft import (
+    PeftConfig,
+    PeftModel
+)
 
 from .choice import map_choice
 from .tokenizer import StreamTokenizer
@@ -302,6 +306,7 @@ def load_model(
     name_or_path,
     revision=None,
     cache_dir=None,
+    is_peft=False,
     load_in_8bit=False,
     load_in_4bit=False,
     quant_type="fp4",
@@ -345,6 +350,10 @@ def load_model(
         # Cast all parameters to float16 if quantization is enabled.
         if half_precision or load_in_8bit or load_in_4bit:
             kwargs["torch_dtype"] = torch.float16
+
+    if is_peft:
+        peft_config = PeftConfig.from_pretrained(name_or_path)
+        name_or_path = peft_config.base_model_name_or_path
 
     # Support both decoder-only and encoder-decoder models.
     try:
