@@ -27,6 +27,7 @@ setup(
         "torch",
         "transformers",
         "waitress",
+        "peft",
     ],
     keywords=["api", "huggingface", "nlp", "openai", "transformer"],
     classifiers=[
