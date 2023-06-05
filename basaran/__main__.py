@@ -21,8 +21,12 @@ from . import MODEL_REVISION
 from . import MODEL_CACHE_DIR
 from . import MODEL_LOAD_IN_8BIT
 from . import MODEL_LOAD_IN_4BIT
+from . import MODEL_LOAD_GPTQ
 from . import MODEL_4BIT_QUANT_TYPE
 from . import MODEL_4BIT_DOUBLE_QUANT
+from . import MODEL_GPTQ_BITS
+from . import MODEL_GPTQ_GROUP_SIZE
+from . import MODEL_GPTQ_DESC_ACT
 from . import MODEL_PEFT
 from . import MODEL_LOCAL_FILES_ONLY
 from . import MODEL_TRUST_REMOTE_CODE
@@ -48,8 +52,12 @@ stream_model = load_model(
     is_peft=MODEL_PEFT,
     load_in_8bit=MODEL_LOAD_IN_8BIT,
     load_in_4bit=MODEL_LOAD_IN_4BIT,
+    load_gptq=MODEL_LOAD_GPTQ,
     quant_type=MODEL_4BIT_QUANT_TYPE,
     double_quant=MODEL_4BIT_DOUBLE_QUANT,
+    gptq_bits=MODEL_GPTQ_BITS,
+    gptq_group_size=MODEL_GPTQ_GROUP_SIZE,
+    gptq_desc_act=MODEL_GPTQ_DESC_ACT,
     local_files_only=MODEL_LOCAL_FILES_ONLY,
     trust_remote_code=MODEL_TRUST_REMOTE_CODE,
     half_precision=MODEL_HALF_PRECISION,

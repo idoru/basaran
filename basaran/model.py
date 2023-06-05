@@ -18,6 +18,10 @@ from peft import (
     PeftConfig,
     PeftModel
 )
+from auto_gptq import (
+    AutoGPTQForCausalLM,
+    BaseQuantizeConfig
+)
 
 from .choice import map_choice
 from .tokenizer import StreamTokenizer
@@ -309,8 +313,12 @@ def load_model(
     is_peft=False,
     load_in_8bit=False,
     load_in_4bit=False,
+    load_gptq=False,
     quant_type="fp4",
     double_quant=False,
+    gptq_bits=4,
+    gptq_group_size=128,
+    gptq_desc_act=True,
     local_files_only=False,
     trust_remote_code=False,
     half_precision=False,
@@ -329,8 +337,8 @@ def load_model(
     if torch.cuda.is_available():
         # Set quantization options if specified.
         quant_config = None
-        if load_in_8bit and load_in_4bit:
-            raise ValueError("Only one of load_in_8bit and load_in_4bit can be True")
+        if [load_in_8bit, load_in_4bit, load_gptq].count(True) > 1:
+            raise ValueError("Only one of load_in_8bit, load_in_4bit, load_gptq can be True")
         if load_in_8bit:
             quant_config = BitsAndBytesConfig(
                 load_in_8bit=True,
@@ -357,10 +365,19 @@ def load_model(
     tokenizer = AutoTokenizer.from_pretrained(name_or_path, **kwargs)
 
     # Support both decoder-only and encoder-decoder models.
-    try:
-        model = AutoModelForCausalLM.from_pretrained(name_or_path, **kwargs)
-    except ValueError:
-        model = AutoModelForSeq2SeqLM.from_pretrained(name_or_path, **kwargs)
+    if load_gptq:
+        quant_config = BaseQuantizeConfig(
+            bits=gptq_bits,
+            group_size=gptq_group_size,
+            desc_act=gptq_desc_act,
+        )
+        kwargs["quantization_config"] = quant_config
+        model = AutoGPTQForCausalLM.from_quantized(name_or_path, **kwargs)
+    else:
+        try:
+            model = AutoModelForCausalLM.from_pretrained(name_or_path, **kwargs)
+        except ValueError:
+            model = AutoModelForSeq2SeqLM.from_pretrained(name_or_path, **kwargs)
 
     # Check if the model has text generation capabilities.
     if not model.can_generate():
