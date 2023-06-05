@@ -28,6 +28,7 @@ setup(
         "transformers",
         "waitress",
         "peft",
+        "auto-gptq",
     ],
     keywords=["api", "huggingface", "nlp", "openai", "transformer"],
     classifiers=[
